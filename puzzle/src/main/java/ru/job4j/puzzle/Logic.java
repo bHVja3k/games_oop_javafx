@@ -6,9 +6,9 @@ import ru.job4j.puzzle.firuges.Figure;
 import java.util.Arrays;
 
 /**
- * //TODO add comments.
+ * Logic.
  *
- * @author Petr Arsentev (parsentev@yandex.ru)
+ * @author Maxim Matskevich
  * @version $Id$
  * @since 0.1
  */
@@ -20,6 +20,28 @@ public class Logic {
     public Logic(int size) {
         this.size = size;
         this.figures = new Figure[size * size];
+    }
+
+    public static boolean monoHorizontal(int[][] board, int row) {
+        boolean result = true;
+        for (int i = 0; i < board.length; i++) {
+            if (board[row][i] != 1) {
+                result = false;
+                break;
+            }
+        }
+        return result;
+    }
+
+    public static boolean monoVertical(int[][] board, int column) {
+        boolean result = true;
+        for (int i = 0; i < board.length; i++) {
+            if (board[i][column] != 1) {
+                result = false;
+                break;
+            }
+        }
+        return result;
     }
 
     public void add(Figure figure) {
@@ -39,12 +61,12 @@ public class Logic {
         return rst;
     }
 
-    public boolean isFree(Cell ... cells) {
+    public boolean isFree(Cell... cells) {
         boolean result = cells.length > 0;
         for (Cell cell : cells) {
             if (this.findBy(cell) != -1) {
-               result = false;
-               break;
+                result = false;
+                break;
             }
         }
         return result;
@@ -71,6 +93,12 @@ public class Logic {
     public boolean isWin() {
         int[][] table = this.convert();
         boolean result = false;
+        for (int i = 0; i < table.length; i++) {
+            if (monoHorizontal(table, i) || monoVertical(table, i)) {
+                result = true;
+                break;
+            }
+        }
         return result;
     }
 
