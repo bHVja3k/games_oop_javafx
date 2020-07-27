@@ -3,6 +3,11 @@ package ru.job4j.chess.firuges.black;
 import ru.job4j.chess.firuges.Cell;
 import ru.job4j.chess.firuges.Figure;
 
+/**
+ * @author Maxim Matskevich
+ * @version $Id$
+ * @since 0.1
+ */
 public class BishopBlack implements Figure {
     private final Cell position;
 
@@ -15,15 +20,38 @@ public class BishopBlack implements Figure {
         return this.position;
     }
 
+    public static Cell findBy(int startX, int startY) {
+        for (Cell cell : Cell.values()) {
+            if (cell.x == startX && cell.y == startY) {
+                return cell;
+            }
+        }
+        return null;
+    }
+
     @Override
     public Cell[] way(Cell source, Cell dest) {
-        throw new IllegalStateException(
-                String.format("Could not way by diagonal from %s to %s", source, dest)
-        );
+        if (!isDiagonal(source, dest)) {
+            throw new IllegalStateException(
+                    String.format("Could not way by diagonal from %s to %s", source, dest)
+            );
+        }
+        int size = Math.abs(dest.x - source.x);
+        Cell[] steps = new Cell[size];
+        int startX = source.x;
+        int startY = source.y;
+        int deltaX = Integer.compare(dest.x, source.x);
+        int deltaY = Integer.compare(dest.y, source.y);
+        for (int index = 0; index < size; index++) {
+            startX += deltaX;
+            startY += deltaY;
+            steps[index] = findBy(startX, startY);
+        }
+        return steps;
     }
 
     public boolean isDiagonal(Cell source, Cell dest) {
-        return false;
+        return Math.abs(dest.x - source.x) == Math.abs(dest.y - source.y);
     }
 
     @Override

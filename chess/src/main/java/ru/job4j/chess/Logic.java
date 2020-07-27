@@ -1,15 +1,13 @@
 package ru.job4j.chess;
 
+import ru.job4j.chess.exeption.OccupiedWayException;
 import ru.job4j.chess.firuges.Cell;
 import ru.job4j.chess.firuges.Figure;
 
 import java.util.Arrays;
-import java.util.Optional;
 
 /**
- * //TODO add comments.
- *
- * @author Petr Arsentev (parsentev@yandex.ru)
+ * @author Maxim Matskevich
  * @version $Id$
  * @since 0.1
  */
@@ -21,15 +19,22 @@ public class Logic {
         this.figures[this.index++] = figure;
     }
 
-    public boolean move(Cell source, Cell dest) {
+    public boolean move(Cell source, Cell dest) throws OccupiedWayException {
         boolean rst = false;
-        int index = this.findBy(source);
-        if (index != -1) {
-            Cell[] steps = this.figures[index].way(source, dest);
-            if (steps.length > 0 && steps[steps.length - 1].equals(dest)) {
-                rst = true;
-                this.figures[index] = this.figures[index].copy(dest);
+        try {
+            int index = this.findBy(source);
+            if (index != -1) {
+                Cell[] steps = this.figures[index].way(source, dest);
+                if (!isPossibleWay(this.figures[index].way(source, dest))) {
+                    throw new OccupiedWayException("The way is occupied!");
+                }
+                if (steps.length > 0 && steps[steps.length - 1].equals(dest)) {
+                    rst = true;
+                    this.figures[index] = this.figures[index].copy(dest);
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return rst;
     }
@@ -51,6 +56,18 @@ public class Logic {
         }
         return rst;
     }
+
+    private boolean isPossibleWay(Cell[] way) {
+        boolean result = way.length > 0;
+        for (Cell cell : way) {
+            if (this.findBy(cell) != -1) {
+                result = false;
+                break;
+            }
+        }
+        return result;
+    }
+
 
     @Override
     public String toString() {
